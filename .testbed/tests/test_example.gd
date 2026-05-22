@@ -1,10 +1,10 @@
 extends GutTest
 
 func before_all():
-	gut.p("Starting Input Driver Tests...")
+	gut.p("Starting Spatial UI Mouse Tests...")
 
 func after_all():
-	gut.p("Finished Input Driver Tests.")
+	gut.p("Finished Spatial UI Mouse Tests.")
 
 func test_sanity_check():
 	assert_eq(1, 1, "Math should work")
@@ -15,4 +15,13 @@ func test_plugin_manifest_structure():
 
 	var config = ConfigFile.new()
 	assert_eq(config.load(manifest_path), OK, "plugin.cfg should load")
-	assert_true(config.get_value("plugin", "name", "") != "", "plugin name should be set")
+	assert_eq(
+		config.get_value("plugin", "name", ""),
+		"AeroBeat Spatial UI Mouse",
+		"plugin name should match the repo role"
+	)
+	assert_eq(
+		config.get_value("plugin", "description", ""),
+		"Mouse-driven spatial UI provider addon for AeroBeat.",
+		"plugin description should match the repo role"
+	)
