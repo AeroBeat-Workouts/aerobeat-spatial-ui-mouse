@@ -4,7 +4,7 @@
     // Canonical shared UI interaction contract for all AeroBeat spatial UI providers.
     "aerobeat-input-core": {
       "url": "git@github.com:AeroBeat-Workouts/aerobeat-input-core.git",
-      "checkout": "v0.1.0",
+      "checkout": "main",
       "subfolder": "/"
     },
     // Shared helper-layer package for spatial UI provider infrastructure.

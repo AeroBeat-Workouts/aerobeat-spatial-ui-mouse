@@ -24,7 +24,7 @@ It does **not** own:
 - event taxonomy, event classes, or the interaction bus
 - the native 2D bridge path
 - shared cross-provider spatial helper ownership
-- extracted proof-scene implementation from `aerobeat-ui-kit-community`
+- scene-specific proof-host composition from `aerobeat-ui-kit-community`
 
 ## Dependency truth
 
@@ -33,18 +33,11 @@ This repo sits on top of:
 - `aerobeat-input-core` — canonical contract owner
 - `aerobeat-spatial-ui-core` — shared helper-layer owner
 
-Those dependencies are represented in `.testbed/addons.jsonc`, while the runtime placeholder classes in `src/providers/mouse/` establish the concrete provider boundary without implementing real provider behavior yet.
+Those dependencies are represented in `.testbed/addons.jsonc`, while the runtime provider files under `src/providers/mouse/` establish the concrete provider boundary.
 
-## Phase 1 deliverables in this repo
+## Phase progression
 
-This boundary-freeze slice adds only:
+- **Phase 1:** boundary freeze and placeholder scaffolding
+- **Phase 2:** first real extracted mouse-provider slice
 
-- placeholder mouse-provider classes
-- explicit boundary documentation
-- repo-local tests that guard the ownership line
-
-It intentionally does **not** add extracted runtime behavior, hybrid proof logic, or native 2D bridge code.
-
-## Follow-up phase
-
-Real provider extraction belongs to the later implementation phase after the repo-family ownership boundary is fully frozen across the related repos.
+The Phase 2 extraction now lives in `docs/phase-2-first-mouse-provider-extraction.md`. That extraction keeps world-hit acquisition and proof-scene composition outside this repo for now, while moving reusable mouse hover/capture/publication semantics into the provider lane.

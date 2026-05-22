@@ -2,26 +2,22 @@
 
 `aerobeat-spatial-ui-mouse` is the AeroBeat repo for the **mouse-driven spatial UI provider** lane.
 
-This package is the first concrete `aerobeat-spatial-ui-*` provider lane, but it is still in a **Phase 1 boundary-freeze** state. The current goal is to make the ownership line obvious in package structure, docs, and tests before any real provider behavior gets extracted.
+This package is the first concrete `aerobeat-spatial-ui-*` provider lane. It has now advanced past pure placeholder scaffolding into a **thin Phase 2 extracted slice**: reusable mouse hover/capture/publication logic for projected spatial surfaces.
 
-## Phase 1 status
+## Current status
 
-This repository now includes the minimal scaffolding needed to freeze its ownership boundary in code.
+This repository now contains:
 
-That currently means:
-
-- explicit provider-lane placeholder classes under `src/providers/mouse/`
+- explicit provider-lane runtime under `src/providers/mouse/`
+- real mouse-provider lifecycle extraction for projected hover/press/capture continuity
 - docs that pin `aerobeat-input-core` as the contract owner
-- docs and tests that pin `aerobeat-spatial-ui-core` as the shared helper-layer owner
-- repo-local validation that guards against premature drift into contract ownership or native 2D bridge logic
+- docs and runtime usage that pin `aerobeat-spatial-ui-core` as the shared helper-layer owner
+- repo-local validation that guards against drift into contract ownership or native 2D bridge logic
 
-Current non-goals for this phase:
+The current extracted slice is intentionally narrow:
 
-- no extracted world-hit / raycast behavior yet
-- no projected coordinate mapping implementation yet
-- no hybrid proof extraction yet
-- no canonical interaction contract definitions here
-- no native 2D bridge logic here
+- **included now:** projected-target hover publication, mouse press ownership, capture continuity, and motion/release handling
+- **still deferred:** world-ray acquisition ownership, native 2D bridge behavior, and scene-specific proof-host composition
 
 ## Planned responsibility boundary
 
@@ -50,15 +46,18 @@ It is **not** intended to become:
   - `aerobeat-spatial-ui-core` owns shared spatial-provider helper scaffolding
   - `gut` drives repo-local validation
 
-## Runtime scaffolding added in Phase 1
+## Runtime files
 
-The current placeholder runtime surface lives under:
+The current provider surface lives under:
 
 - `src/providers/mouse/aero_spatial_ui_mouse_provider.gd`
 - `src/providers/mouse/aero_spatial_ui_mouse_provider_config.gd`
 - `src/providers/mouse/aero_spatial_ui_mouse_runtime_boundary.gd`
 
-These files exist to freeze the repo boundary only. They do **not** implement the real mouse provider yet.
+Key repo-local docs:
+
+- `docs/phase-1-boundary-freeze.md`
+- `docs/phase-2-first-mouse-provider-extraction.md`
 
 ## GodotEnv development flow
 
@@ -111,5 +110,6 @@ godot --headless --path .testbed --script addons/gut/gut_cmdln.gd \
 ## Validation notes
 
 - `.testbed/addons.jsonc` is the committed dev/test dependency manifest.
-- `docs/phase-1-boundary-freeze.md` is the repo-local boundary note for this slice.
-- Follow-up implementation work should add actual provider behavior only after the broader architecture rollout proceeds beyond the boundary-freeze phase.
+- `docs/phase-1-boundary-freeze.md` records the ownership line.
+- `docs/phase-2-first-mouse-provider-extraction.md` records the first real extracted provider seam.
+- Follow-up implementation work should cut current proof/reference hosts over to this provider instead of letting long-term mouse provider ownership remain in `aerobeat-ui-kit-community`.
