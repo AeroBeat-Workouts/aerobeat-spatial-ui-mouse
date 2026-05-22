@@ -2,20 +2,26 @@
 
 `aerobeat-spatial-ui-mouse` is the AeroBeat repo for the **mouse-driven spatial UI provider** lane.
 
-This package is planned to be the first concrete `aerobeat-spatial-ui-*` provider. Its long-term role is to turn desktop mouse interaction on projected/world-space UI surfaces into the shared AeroBeat UI interaction contract without redefining that contract.
+This package is the first concrete `aerobeat-spatial-ui-*` provider lane, but it is still in a **Phase 1 boundary-freeze** state. The current goal is to make the ownership line obvious in package structure, docs, and tests before any real provider behavior gets extracted.
 
-## Phase 0 status
+## Phase 1 status
 
-This repository is currently in **bootstrap cleanup**.
+This repository now includes the minimal scaffolding needed to freeze its ownership boundary in code.
 
-That means the repo identity, metadata, and testbed scaffolding have been aligned with the planned `spatial-ui-mouse` role, but the actual provider implementation is intentionally still pending.
+That currently means:
+
+- explicit provider-lane placeholder classes under `src/providers/mouse/`
+- docs that pin `aerobeat-input-core` as the contract owner
+- docs and tests that pin `aerobeat-spatial-ui-core` as the shared helper-layer owner
+- repo-local validation that guards against premature drift into contract ownership or native 2D bridge logic
 
 Current non-goals for this phase:
 
-- no feature extraction yet
-- no world-hit / projection implementation yet
-- no contract-bridge behavior yet
-- no new provider logic yet
+- no extracted world-hit / raycast behavior yet
+- no projected coordinate mapping implementation yet
+- no hybrid proof extraction yet
+- no canonical interaction contract definitions here
+- no native 2D bridge logic here
 
 ## Planned responsibility boundary
 
@@ -31,16 +37,28 @@ It is **not** intended to become:
 
 - a second contract-definition repo
 - the owner of the canonical interaction taxonomy
+- the home of the native 2D bridge path
+- the owner of shared cross-provider spatial helpers
 - a grab-bag template for general gameplay input drivers
 
 ## Repository details
 
 - **Type:** Spatial UI provider
 - **License:** Mozilla Public License 2.0 (MPL 2.0)
-- **Planned shared dependencies:**
-  - `aerobeat-input-core` for the canonical UI interaction contract
-  - `aerobeat-spatial-ui-core` for shared spatial-provider helpers
-  - `gut` for repo-local validation
+- **Dependency truth:**
+  - `aerobeat-input-core` owns the canonical UI interaction contract
+  - `aerobeat-spatial-ui-core` owns shared spatial-provider helper scaffolding
+  - `gut` drives repo-local validation
+
+## Runtime scaffolding added in Phase 1
+
+The current placeholder runtime surface lives under:
+
+- `src/providers/mouse/aero_spatial_ui_mouse_provider.gd`
+- `src/providers/mouse/aero_spatial_ui_mouse_provider_config.gd`
+- `src/providers/mouse/aero_spatial_ui_mouse_runtime_boundary.gd`
+
+These files exist to freeze the repo boundary only. They do **not** implement the real mouse provider yet.
 
 ## GodotEnv development flow
 
@@ -93,5 +111,5 @@ godot --headless --path .testbed --script addons/gut/gut_cmdln.gd \
 ## Validation notes
 
 - `.testbed/addons.jsonc` is the committed dev/test dependency manifest.
-- This Phase 0 slice only aligns naming, metadata, and testbed identity with the planned spatial UI mouse role.
-- Follow-up implementation work should add actual provider code only after the broader architecture rollout proceeds beyond bootstrap cleanup.
+- `docs/phase-1-boundary-freeze.md` is the repo-local boundary note for this slice.
+- Follow-up implementation work should add actual provider behavior only after the broader architecture rollout proceeds beyond the boundary-freeze phase.
