@@ -56,13 +56,13 @@ func test_plugin_manifest_structure():
 		"plugin description should match the repo role"
 	)
 
-func test_provider_boundary_and_config_now_describe_real_phase_2_slice():
+func test_provider_boundary_and_config_now_describe_real_phase_3_slice():
 	assert_true(FileAccess.file_exists(PROVIDER_SCRIPT_PATH), "provider script should exist")
 
 	var config = load(PROVIDER_CONFIG_SCRIPT_PATH).new()
 	var snapshot: Dictionary = config.to_boundary_snapshot()
 	assert_eq(snapshot.get("provider_lane"), "mouse", "config should identify the mouse lane")
-	assert_eq(snapshot.get("extraction_phase"), "phase_2_first_mouse_provider_extraction", "config should record the Phase 2 extraction slice")
+	assert_eq(snapshot.get("extraction_phase"), "phase_3_packaged_rect_target_resolver_cutover", "config should record the Phase 3 packaged resolver cutover")
 	assert_eq(snapshot.get("pointer_id"), &"mouse_0", "config should keep the canonical default pointer id")
 	assert_eq(snapshot.get("target_resolution"), "rect_target_specs", "config should point at rect-target resolution by default")
 
@@ -78,12 +78,15 @@ func test_provider_boundary_and_config_now_describe_real_phase_2_slice():
 	assert_false(boundary.get("owns_native_2d_bridge", true), "native 2D bridge ownership must stay outside this repo")
 	assert_false(boundary.get("owns_contract_definition", true), "contract ownership must stay outside this repo")
 
-func test_runtime_boundary_and_docs_state_phase_2_scope_explicitly():
+func test_runtime_boundary_and_docs_state_phase_3_scope_explicitly():
 	var runtime_boundary_script = load(RUNTIME_BOUNDARY_SCRIPT_PATH)
 	var extracted_slice: Dictionary = runtime_boundary_script.call("describe_extracted_slice")
 	assert_true(extracted_slice.get("owns_mouse_hover_publication", false), "runtime boundary should include hover publication")
 	assert_true(extracted_slice.get("owns_mouse_capture_continuity", false), "runtime boundary should include capture continuity")
 	assert_false(extracted_slice.get("owns_world_hit_acquisition", true), "runtime boundary should exclude world-hit acquisition")
+
+	var dependencies: Dictionary = runtime_boundary_script.call("describe_dependencies")
+	assert_true(PackedStringArray(dependencies.get("helper_dependencies", PackedStringArray())).has("AeroSpatialRectTargetResolver"), "runtime boundary should advertise the packaged rect-target resolver dependency")
 
 	var non_goals: PackedStringArray = runtime_boundary_script.call("describe_non_goals")
 	assert_true(non_goals.has("no canonical interaction contract types"), "boundary should forbid local contract ownership")
@@ -101,6 +104,8 @@ func test_runtime_boundary_and_docs_state_phase_2_scope_explicitly():
 	assert_string_contains(extraction_doc, "mouse-specific hover enter/exit publication")
 	assert_string_contains(extraction_doc, "world-ray acquisition itself")
 	assert_string_contains(extraction_doc, "mouse-provider publication/capture lifecycle")
+	assert_string_contains(extraction_doc, "provider-local rect-target lookup fallback is now retired")
+	assert_string_contains(extraction_doc, "packaged `AeroSpatialRectTargetResolver` helper")
 
 func test_provider_publishes_hover_press_motion_and_release_with_capture_continuity():
 	var provider = load(PROVIDER_SCRIPT_PATH).new()
@@ -149,6 +154,7 @@ func test_provider_publishes_hover_press_motion_and_release_with_capture_continu
 	assert_true(provider.publish_input_event(adapter, surface, press, center_hit), "mouse press on a valid target should publish")
 	assert_eq(adapter.published_events.size(), 2, "initial hover motion and press should both publish adapter events")
 	assert_eq(adapter.published_events[1].get("projected_data", {}).get("target_path"), NodePath("PreviewCenter/PrimaryActionButton"))
+	assert_eq(adapter.published_events[1].get("projected_data", {}).get("raw_metadata", {}).get("matched_target_key"), "primary_action", "press should carry metadata from the packaged resolver")
 
 	assert_true(provider.publish_input_event(adapter, surface, motion_captured, off_target_hit), "captured motion should continue publishing even after hover leaves the original target")
 	assert_eq(adapter.published_phases.size(), 2, "moving off the target should publish hover_exit")

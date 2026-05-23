@@ -3,6 +3,7 @@ extends RefCounted
 
 const PROJECTION_HELPER_SCRIPT := preload("res://addons/aerobeat-spatial-ui-core/src/helpers/providers/aero_spatial_projection_helper.gd")
 const HOVER_CAPTURE_POLICY_SCRIPT := preload("res://addons/aerobeat-spatial-ui-core/src/helpers/policies/aero_spatial_hover_capture_policy.gd")
+const RECT_TARGET_RESOLVER_SCRIPT_PATH := "res://addons/aerobeat-spatial-ui-core/src/helpers/providers/aero_spatial_rect_target_resolver.gd"
 const INTERACTION_TYPES := preload("res://addons/aerobeat-input-core/src/ui/ui_interaction_types.gd")
 
 const PROVIDER_LANE := "mouse"
@@ -18,6 +19,7 @@ var target_resolution := "rect_target_specs"
 
 var _projection_helper = PROJECTION_HELPER_SCRIPT.new()
 var _hover_capture_policy = HOVER_CAPTURE_POLICY_SCRIPT.new()
+var _target_resolver = null
 var _pointer_state: Dictionary = {}
 var _left_button_down := false
 var _last_projected_data: Dictionary = {}
@@ -27,6 +29,7 @@ var _last_release_target_path := ""
 var _last_forwarded_panel_event := ""
 
 func _init(config = null) -> void:
+	_target_resolver = _build_target_resolver()
 	_pointer_state = _hover_capture_policy.build_pointer_state()
 	if config != null:
 		apply_config(config)
@@ -293,45 +296,23 @@ func _publish_hover_phase(
 		}
 	})
 
+func _build_target_resolver():
+	var resolver_script = load(RECT_TARGET_RESOLVER_SCRIPT_PATH)
+	if resolver_script == null:
+		push_error("AeroSpatialUiMouseProvider could not load packaged rect-target resolver: %s" % RECT_TARGET_RESOLVER_SCRIPT_PATH)
+		return null
+	return resolver_script.new()
+
 func _resolve_target_for_hit(surface, projected_hit: Dictionary) -> Dictionary:
-	if surface == null:
+	if _target_resolver == null:
 		return {"target_path": NodePath(), "raw_metadata": {"resolution_mode": "rect_target_specs"}}
-
-	var hit: Dictionary = projected_hit if projected_hit is Dictionary else {}
-	var surface_position: Vector2 = hit.get(
-		"authored_viewport_position",
-		hit.get("surface_position", hit.get("viewport_position", Vector2.ZERO))
-	)
-	var authored_uv: Vector2 = hit.get(
-		"authored_uv",
-		hit.get("surface_normalized_position", hit.get("uv", Vector2(-1.0, -1.0)))
-	)
-	var result := {
-		"target_path": NodePath(),
-		"raw_metadata": {
-			"resolution_mode": "rect_target_specs",
-		}
+	var resolution_result = _target_resolver.resolve_target(surface, projected_hit)
+	if resolution_result == null:
+		return {"target_path": NodePath(), "raw_metadata": {"resolution_mode": "rect_target_specs"}}
+	return {
+		"target_path": resolution_result.target_path,
+		"raw_metadata": resolution_result.raw_metadata.duplicate(true),
 	}
-
-	for spec_variant in surface.duplicate_target_specs():
-		if not (spec_variant is Dictionary):
-			continue
-		var spec: Dictionary = spec_variant
-		var rect: Rect2 = spec.get("rect", Rect2())
-		var normalized_rect: Rect2 = surface.normalize_surface_rect(rect)
-		var matched := false
-		if normalized_rect.size.x > 0.0 and normalized_rect.size.y > 0.0 and normalized_rect.has_point(authored_uv):
-			matched = true
-		elif rect.has_point(surface_position):
-			matched = true
-		if not matched:
-			continue
-		result["target_path"] = spec.get("target_path", NodePath())
-		result["raw_metadata"]["matched_target_key"] = str(spec.get("target_key", ""))
-		result["raw_metadata"]["matched_target_label"] = str(spec.get("target_name", ""))
-		return result
-
-	return result
 
 func _build_projected_data(
 	surface,

@@ -7,7 +7,7 @@ const DEFAULT_DRAG_THRESHOLD_PIXELS := 12.0
 
 var contract_owner_package := "aerobeat-input-core"
 var shared_helper_owner_package := "aerobeat-spatial-ui-core"
-var extraction_phase := "phase_2_first_mouse_provider_extraction"
+var extraction_phase := "phase_3_packaged_rect_target_resolver_cutover"
 var pointer_id: StringName = DEFAULT_POINTER_ID
 var drag_threshold_pixels := DEFAULT_DRAG_THRESHOLD_PIXELS
 var host_surface := ""

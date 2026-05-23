@@ -17,6 +17,7 @@ static func describe_dependencies() -> Dictionary:
 		"helper_dependencies": PackedStringArray([
 			"AeroSpatialProjectionHelper",
 			"AeroSpatialHoverCapturePolicy",
+			"AeroSpatialRectTargetResolver",
 		]),
 	}
 

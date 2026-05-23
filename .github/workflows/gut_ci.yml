@@ -47,3 +47,23 @@ jobs:
             -gdir=res://tests \
             -ginclude_subdirs \
             -gexit
+
+      - name: 📦 Stage package like a downstream installed addon
+        run: |
+          rm -rf .testbed/addons/aerobeat-spatial-ui-mouse
+          mkdir -p .testbed/addons/aerobeat-spatial-ui-mouse
+          tar \
+            --exclude=.git \
+            --exclude=.godot \
+            --exclude=.beads \
+            --exclude=.dolt \
+            --exclude=.testbed/.addons \
+            --exclude=.testbed/.godot \
+            --exclude=.testbed/addons \
+            -cf - . | tar -xf - -C .testbed/addons/aerobeat-spatial-ui-mouse
+
+      - name: 🧭 Re-import with staged downstream addon
+        run: godot --headless --path .testbed --import
+
+      - name: 🔌 Smoke-test installed addon runtime loading
+        run: godot --headless --path .testbed --script res://scripts/validate_installed_addon_paths.gd

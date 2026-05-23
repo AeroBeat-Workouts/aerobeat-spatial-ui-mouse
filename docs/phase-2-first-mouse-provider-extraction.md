@@ -31,9 +31,9 @@ This repo now depends on:
 - `aerobeat-input-core` for the canonical contract and `HybridSubViewportInputAdapter`
 - `aerobeat-spatial-ui-core` for authored-space projection helpers and neutral hover/capture bookkeeping
 
-### Current integration note
+### Phase 3 packaged resolver cutover
 
-The installed `AeroSpatialRectTargetResolver` addon path currently does not resolve cleanly from the packaged addon layout, so this Phase 2 slice carries a tiny provider-local rect-target lookup fallback while still building on the shared helper layer for projection and hover/capture policy. That fallback should be removed once the upstream helper package path issue is corrected.
+The provider-local rect-target lookup fallback is now retired. `AeroSpatialUiMouseProvider` resolves targets through the packaged `AeroSpatialRectTargetResolver` helper from `aerobeat-spatial-ui-core`, and the repo now validates that path through a staged installed-addon smoke pass so downstream-style consumers exercise the same packaged resolver route.
 
 ## Why this slice is the right first extraction
 
