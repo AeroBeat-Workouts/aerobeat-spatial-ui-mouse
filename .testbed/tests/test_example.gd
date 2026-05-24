@@ -1,8 +1,8 @@
 extends GutTest
 
-const PROVIDER_SCRIPT_PATH := "res://../src/providers/mouse/aero_spatial_ui_mouse_provider.gd"
-const PROVIDER_CONFIG_SCRIPT_PATH := "res://../src/providers/mouse/aero_spatial_ui_mouse_provider_config.gd"
-const RUNTIME_BOUNDARY_SCRIPT_PATH := "res://../src/providers/mouse/aero_spatial_ui_mouse_runtime_boundary.gd"
+const PROVIDER_SCRIPT_PATH := "res://addons/aerobeat-spatial-ui-mouse/src/providers/mouse/aero_spatial_ui_mouse_provider.gd"
+const PROVIDER_CONFIG_SCRIPT_PATH := "res://addons/aerobeat-spatial-ui-mouse/src/providers/mouse/aero_spatial_ui_mouse_provider_config.gd"
+const RUNTIME_BOUNDARY_SCRIPT_PATH := "res://addons/aerobeat-spatial-ui-mouse/src/providers/mouse/aero_spatial_ui_mouse_runtime_boundary.gd"
 const BOUNDARY_DOC_PATH := "res://../docs/phase-1-boundary-freeze.md"
 const EXTRACTION_DOC_PATH := "res://../docs/phase-2-first-mouse-provider-extraction.md"
 const SURFACE_DESCRIPTOR_SCRIPT := preload("res://addons/aerobeat-spatial-ui-core/src/helpers/surfaces/aero_spatial_surface_descriptor.gd")
@@ -80,15 +80,15 @@ func test_provider_boundary_and_config_now_describe_real_phase_3_slice():
 
 func test_runtime_boundary_and_docs_state_phase_3_scope_explicitly():
 	var runtime_boundary_script = load(RUNTIME_BOUNDARY_SCRIPT_PATH)
-	var extracted_slice: Dictionary = runtime_boundary_script.call("describe_extracted_slice")
+	var extracted_slice: Dictionary = runtime_boundary_script.describe_extracted_slice()
 	assert_true(extracted_slice.get("owns_mouse_hover_publication", false), "runtime boundary should include hover publication")
 	assert_true(extracted_slice.get("owns_mouse_capture_continuity", false), "runtime boundary should include capture continuity")
 	assert_false(extracted_slice.get("owns_world_hit_acquisition", true), "runtime boundary should exclude world-hit acquisition")
 
-	var dependencies: Dictionary = runtime_boundary_script.call("describe_dependencies")
+	var dependencies: Dictionary = runtime_boundary_script.describe_dependencies()
 	assert_true(PackedStringArray(dependencies.get("helper_dependencies", PackedStringArray())).has("AeroSpatialRectTargetResolver"), "runtime boundary should advertise the packaged rect-target resolver dependency")
 
-	var non_goals: PackedStringArray = runtime_boundary_script.call("describe_non_goals")
+	var non_goals: PackedStringArray = runtime_boundary_script.describe_non_goals()
 	assert_true(non_goals.has("no canonical interaction contract types"), "boundary should forbid local contract ownership")
 	assert_true(non_goals.has("no native 2D bridge logic"), "boundary should forbid native 2D bridge logic")
 	assert_true(non_goals.has("no world-ray acquisition ownership yet"), "boundary should keep world-ray acquisition outside this slice")
