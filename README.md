@@ -81,6 +81,17 @@ cd .testbed
 godotenv addons install
 ```
 
+This bootstrap step now restores both:
+
+- external dependencies (`aerobeat-input-core`, `aerobeat-spatial-ui-core`, `gut`)
+- this repo's own package mount under `res://addons/aerobeat-spatial-ui-mouse/` via the local-root GodotEnv symlink entry in `.testbed/addons.jsonc`
+
+If you want the canonical workspace refresh path instead of calling `godotenv` directly, run:
+
+```bash
+/home/derrick/.openclaw/workspace/scripts/godotenv-sync --repo /home/derrick/.openclaw/workspace/projects/aerobeat/aerobeat-spatial-ui-mouse/.testbed
+```
+
 ### Open the workbench
 
 From the repo root:
@@ -110,8 +121,8 @@ godot --headless --path .testbed --script addons/gut/gut_cmdln.gd \
 
 ## Validation notes
 
-- `.testbed/addons.jsonc` is the committed dev/test dependency manifest.
+- `.testbed/addons.jsonc` is the committed dev/test dependency manifest, including the repo's own local-root self-mount entry for `aerobeat-spatial-ui-mouse`.
 - `docs/phase-1-boundary-freeze.md` records the ownership line.
 - `docs/phase-2-first-mouse-provider-extraction.md` records the first real extracted provider seam.
 - Follow-up implementation work should cut current proof/reference hosts over to this provider instead of letting long-term mouse provider ownership remain in `aerobeat-ui-kit-community`.
-- To catch installed-addon path regressions, stage this repo into `.testbed/addons/aerobeat-spatial-ui-mouse/` before import/test and run the installed-addon smoke script so the packaged provider path is exercised end-to-end.
+- To catch installed-addon path regressions, refresh the hidden testbed from the manifest, verify `.testbed/addons/aerobeat-spatial-ui-mouse/` exists, then run the installed-addon smoke script so the packaged provider path is exercised end-to-end.
