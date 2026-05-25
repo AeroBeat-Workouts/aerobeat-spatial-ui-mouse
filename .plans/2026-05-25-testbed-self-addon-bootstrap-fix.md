@@ -76,7 +76,7 @@ We should keep the package boundary intact: durable edits belong in the owning r
 
 **Status:** ✅ Complete
 
-**Results:** Added the canonical self-mount entry to `REF-01` so `.testbed/addons.jsonc` now declares `aerobeat-spatial-ui-mouse` with `"url": ".."`, `"source": "symlink"`, and `"subfolder": "/"`, which stages the owning repo at `res://addons/aerobeat-spatial-ui-mouse/` during GodotEnv installs. Updated `REF-02` so the bootstrap flow explicitly says `godotenv addons install` restores both external dependencies and the repo’s own package mount, and documented `/home/derrick/.openclaw/workspace/scripts/godotenv-sync --repo /home/derrick/.openclaw/workspace/projects/aerobeat/aerobeat-spatial-ui-mouse/.testbed` as the canonical refresh path. Validation run: first `godotenv-sync --repo /home/derrick/.openclaw/workspace/projects/aerobeat/aerobeat-spatial-ui-mouse/.testbed` exposed an existing generated addon replacement failure (`Cannot delete modified addon aerobeat-spatial-ui-mouse`), so I cleared only the generated `.testbed/addons/aerobeat-spatial-ui-mouse` and `.testbed/.addons/aerobeat-spatial-ui-mouse` copies, reran the same canonical refresh successfully, verified `.testbed/addons/aerobeat-spatial-ui-mouse` is now a symlink to the owning repo root, then ran `godot --headless --path .testbed --import`, `godot --headless --path .testbed --script res://scripts/validate_installed_addon_paths.gd`, and `godot --headless --path .testbed --script addons/gut/gut_cmdln.gd -gdir=res://tests -ginclude_subdirs -gexit` from the repo root. Import completed, the installed-addon smoke script passed, and GUT reported 9/9 tests passed. Commit hash: Pending.
+**Results:** Added the canonical self-mount entry to `REF-01` so `.testbed/addons.jsonc` now declares `aerobeat-spatial-ui-mouse` with `"url": ".."`, `"source": "symlink"`, and `"subfolder": "/"`, which stages the owning repo at `res://addons/aerobeat-spatial-ui-mouse/` during GodotEnv installs. Updated `REF-02` so the bootstrap flow explicitly says `godotenv addons install` restores both external dependencies and the repo’s own package mount, and documented `/home/derrick/.openclaw/workspace/scripts/godotenv-sync --repo /home/derrick/.openclaw/workspace/projects/aerobeat/aerobeat-spatial-ui-mouse/.testbed` as the canonical refresh path. Validation run: first `godotenv-sync --repo /home/derrick/.openclaw/workspace/projects/aerobeat/aerobeat-spatial-ui-mouse/.testbed` exposed an existing generated addon replacement failure (`Cannot delete modified addon aerobeat-spatial-ui-mouse`), so I cleared only the generated `.testbed/addons/aerobeat-spatial-ui-mouse` and `.testbed/.addons/aerobeat-spatial-ui-mouse` copies, reran the same canonical refresh successfully, verified `.testbed/addons/aerobeat-spatial-ui-mouse` is now a symlink to the owning repo root, then ran `godot --headless --path .testbed --import`, `godot --headless --path .testbed --script res://scripts/validate_installed_addon_paths.gd`, and `godot --headless --path .testbed --script addons/gut/gut_cmdln.gd -gdir=res://tests -ginclude_subdirs -gexit` from the repo root. Import completed, the installed-addon smoke script passed, and GUT reported 9/9 tests passed. Commit hash: `19fec92`.
 
 ---
 
@@ -127,14 +127,14 @@ We should keep the package boundary intact: durable edits belong in the owning r
 
 **Status:** ⚠️ Partial
 
-**What We Built:** Planning only so far.
+**What We Built:** Task 2 is complete: the hidden testbed now self-mounts the owning repo package through GodotEnv and the README/bootstrap notes describe the canonical refresh/import workflow. QA and auditor stages are still pending.
 
-**Reference Check:** No implementation yet. `REF-01` through `REF-03` captured for execution.
+**Reference Check:** `REF-01` now includes the repo-local self-mount entry, `REF-02` now matches the real bootstrap flow, and Task 2 validation proved the installed addon path resolves under `res://addons/aerobeat-spatial-ui-mouse/...` after canonical refresh.
 
 **Commits:**
-- None yet.
+- `19fec92` - Fix testbed self-mounted addon bootstrap
 
-**Lessons Learned:** The hidden testbed must declare the owning repo package explicitly when installed-addon paths are part of the intended validation surface.
+**Lessons Learned:** When a repo converts from a generated local addon copy to a local-root self-mount, stale generated addon/cache directories may need to be cleared once so GodotEnv can replace them cleanly.
 
 ---
 
